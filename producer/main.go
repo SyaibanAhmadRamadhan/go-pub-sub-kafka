@@ -1,0 +1,3 @@
+package producer
+
+func main() {}
