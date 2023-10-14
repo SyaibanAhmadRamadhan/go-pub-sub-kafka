@@ -16,20 +16,12 @@ var (
 type Config struct {
 	Application struct {
 		Kafka struct {
-			Group  string `mapstructure:"GROUP"`
 			Broker string `mapstructure:"BROKER"`
 			Topic  string `mapstructure:"TOPIC"`
 			User   string `mapstructure:"USER"`
 			Pass   string `mapstructure:"PASSWORD"`
 		} `mapstructure:"KAFKA"`
 	} `mapstructure:"APPLICATION"`
-	Mail struct {
-		Host    string `mapstructure:"HOST"`
-		Port    int    `mapstructure:"PORT"`
-		Address string `mapstructure:"ADDRESS"`
-		Sender  string `mapstructure:"SENDER"`
-		Pass    string `mapstructure:"PASS"`
-	} `mapstructure:"MAIL"`
 }
 
 func Get() Config {

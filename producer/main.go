@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"time"
 
 	"github.com/SyaibanAhmadRamadhan/go-pub-sub-kafka/producer/internal"
 )
@@ -20,7 +19,7 @@ func main() {
 	}()
 
 	scanner := bufio.NewScanner(os.Stdin)
-	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
 	for {
