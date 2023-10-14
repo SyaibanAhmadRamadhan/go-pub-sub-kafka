@@ -26,6 +26,6 @@ services:
       KAFKA_SECURITY_INTER_BROKER_PROTOCOL: SASL_PLAINTEXT
       KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: PLAIN
       KAFKA_SASL_ENABLED_MECHANISMS: PLAIN
-      KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/kafka/configs/kafka_server_jaas.conf"
+      KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/kafka/config/kafka_server_jaas.conf"
     volumes:
-      - ./configs:/etc/kafka/configs
+      - ./config:/etc/kafka/config
