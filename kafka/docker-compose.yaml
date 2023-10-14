@@ -9,8 +9,6 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
     ports:
       - 2181:2181
-    networks:
-      - broker
 
   kafka:
     image: confluentinc/cp-kafka:latest
@@ -31,9 +29,3 @@ services:
       KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/kafka/configs/kafka_server_jaas.conf"
     volumes:
       - ./configs:/etc/kafka/configs
-    networks:
-      - broker
-
-networks:
-  broker:
-    external: true

@@ -1,5 +1,5 @@
 package consumer
 
 func main() {
-	
+
 }
