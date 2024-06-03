@@ -3,23 +3,22 @@ package internal
 import (
 	"context"
 	"encoding/json"
-	"log"
-	"time"
-
+	"fmt"
+	"github.com/SyaibanAhmadRamadhan/go-pub-sub-kafka/producer/infra"
+	"github.com/rs/zerolog/log"
 	"github.com/segmentio/kafka-go"
 	"github.com/segmentio/kafka-go/sasl/plain"
-
-	"github.com/SyaibanAhmadRamadhan/go-pub-sub-kafka/producer/infra"
+	"time"
 )
 
 func KafkaWriter() *kafka.Writer {
 	w := &kafka.Writer{
-		Addr:  kafka.TCP(infra.Get().Application.Kafka.Broker),
-		Topic: infra.Get().Application.Kafka.Topic,
+		Addr:  kafka.TCP(infra.Conf.Application.Kafka.Broker),
+		Topic: infra.Conf.Application.Kafka.Topic,
 		Transport: &kafka.Transport{
 			SASL: plain.Mechanism{
-				Username: infra.Get().Application.Kafka.User,
-				Password: infra.Get().Application.Kafka.Pass,
+				Username: infra.Conf.Application.Kafka.User,
+				Password: infra.Conf.Application.Kafka.Pass,
 			},
 		},
 		AllowAutoTopicCreation: false,
@@ -28,10 +27,7 @@ func KafkaWriter() *kafka.Writer {
 	return w
 }
 
-func WriteMsg(ctx context.Context, mail string, w *kafka.Writer) {
-	ctxTimeOut, cancel := context.WithTimeout(ctx, time.Minute)
-	defer cancel()
-
+func WriteMsg(ctx context.Context, mail string, w *kafka.Writer) error {
 	msg := map[string]string{
 		"value": "test-value",
 		"to":    mail,
@@ -40,14 +36,24 @@ func WriteMsg(ctx context.Context, mail string, w *kafka.Writer) {
 	kafkaMsg, err := json.Marshal(msg)
 
 	if err != nil {
-		log.Fatal("failed marshal map")
+		return fmt.Errorf("marshalling message: %w", err)
 	}
 
-	if err = w.WriteMessages(ctxTimeOut, kafka.Message{
-		Value: kafkaMsg,
-	}); err != nil {
-		log.Fatalf("failed write message to kafka | err : %v", err)
+	for i := 0; i < infra.Conf.Application.Kafka.MaxRetryWriteMsg; i++ {
+		ctxTimeOut, cancel := context.WithTimeout(ctx, 10*time.Second)
+
+		if err = w.WriteMessages(ctxTimeOut, kafka.Message{
+			Value: kafkaMsg,
+		}); err == nil {
+			cancel()
+			return nil
+		} else {
+			log.Warn().Err(err).Msgf("failed to write message (attempt %d/%d)", i+1, infra.Conf.Application.Kafka.MaxRetryWriteMsg)
+			time.Sleep(infra.Conf.Application.Kafka.TimeIntervalRetryWriteMsg)
+		}
+
+		cancel()
 	}
 
-	log.Println("success publish your message | mail : ", mail)
+	return fmt.Errorf("failed to write message after %d retries", infra.Conf.Application.Kafka.MaxRetryWriteMsg)
 }
