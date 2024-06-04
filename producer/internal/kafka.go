@@ -27,13 +27,13 @@ func KafkaWriter() *kafka.Writer {
 	return w
 }
 
-func WriteMsg(ctx context.Context, mail string, w *kafka.Writer) error {
-	msg := map[string]string{
-		"value": "test-value",
-		"to":    mail,
-	}
+type WriteMsgInput struct {
+	Data any
+}
 
-	kafkaMsg, err := json.Marshal(msg)
+func WriteMsg(ctx context.Context, input WriteMsgInput, w *kafka.Writer) error {
+
+	kafkaMsg, err := json.Marshal(input.Data)
 
 	if err != nil {
 		return fmt.Errorf("marshalling message: %w", err)

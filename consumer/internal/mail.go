@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/rs/zerolog/log"
 	mail "github.com/wneessen/go-mail"
-	"strings"
 	"time"
 
 	"github.com/SyaibanAhmadRamadhan/go-pub-sub-kafka/consumer/infra"
@@ -27,14 +26,12 @@ func SendWithGomail(client *mail.Client, payload []byte) (err error) {
 		return fmt.Errorf("FromFormat: %v", err)
 	}
 
-	email := mailMap["to"]
-	mailName := strings.Split(email, "@")[0]
-	err = msg.AddToFormat(mailName, email)
+	err = msg.AddToFormat(mailMap["name"], mailMap["mail"])
 	if err != nil {
 		return fmt.Errorf("AddToFormat: %v", err)
 	}
 
-	msg.Subject("subject")
+	msg.Subject(mailMap["subject"])
 	msg.SetBodyString(mail.TypeTextHTML, templateBuffer.String())
 
 	err = client.DialAndSend(msg)
@@ -46,7 +43,7 @@ func SendWithGomail(client *mail.Client, payload []byte) (err error) {
 	return
 }
 
-func RetrySendMailMechanisme(m *mail.Client, message []byte) error {
+func RetrySendMailMechanism(m *mail.Client, message []byte) error {
 	var err error
 	for i := 0; i < infra.Conf.Mail.MaxRetrySendMail; i++ {
 		if err = SendWithGomail(m, message); err == nil {

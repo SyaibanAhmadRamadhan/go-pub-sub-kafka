@@ -10,7 +10,7 @@ func NewMailtrap() *mail.Client {
 	client, err := mail.NewClient(infra.Conf.Mail.Host,
 		mail.WithSMTPAuth(mail.SMTPAuthPlain),
 		mail.WithPort(infra.Conf.Mail.Port),
-		mail.WithUsername(infra.Conf.Mail.Address),
+		mail.WithUsername(infra.Conf.Mail.Username),
 		mail.WithPassword(infra.Conf.Mail.Pass),
 		mail.WithTLSPortPolicy(mail.TLSMandatory),
 	)

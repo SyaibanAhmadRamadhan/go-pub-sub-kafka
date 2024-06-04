@@ -29,7 +29,7 @@ type Config struct {
 	Mail struct {
 		Host                      string        `mapstructure:"HOST"`
 		Port                      int           `mapstructure:"PORT"`
-		Address                   string        `mapstructure:"ADDRESS"`
+		Username                  string        `mapstructure:"USERNAME"`
 		Sender                    string        `mapstructure:"SENDER"`
 		Pass                      string        `mapstructure:"PASS"`
 		Name                      string        `mapstructure:"NAME"`

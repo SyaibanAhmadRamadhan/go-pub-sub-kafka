@@ -45,6 +45,13 @@ func isValidEmail(email string) bool {
 	return re.MatchString(email)
 }
 
+type PublishSendMailData struct {
+	Mail    string `json:"mail"`
+	Name    string `json:"name"`
+	Subject string `json:"subject"`
+	Message string `json:"message"`
+}
+
 func producer(ctx context.Context, w *kafka.Writer, scanner *bufio.Scanner) {
 	for {
 		fmt.Print("Enter email address ('exit' to exit):")
@@ -59,7 +66,26 @@ func producer(ctx context.Context, w *kafka.Writer, scanner *bufio.Scanner) {
 			continue
 		}
 
-		err := internal.WriteMsg(ctx, email, w)
+		fmt.Print("Enter name: ")
+		scanner.Scan()
+		name := scanner.Text()
+
+		fmt.Print("Enter subject: ")
+		scanner.Scan()
+		subject := scanner.Text()
+
+		fmt.Print("Enter message: ")
+		scanner.Scan()
+		message := scanner.Text()
+
+		err := internal.WriteMsg(ctx, internal.WriteMsgInput{
+			Data: PublishSendMailData{
+				Mail:    email,
+				Name:    name,
+				Subject: subject,
+				Message: message,
+			},
+		}, w)
 		if err != nil {
 			log.Err(err).Msg("failed to write message to kafka")
 			continue

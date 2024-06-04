@@ -49,7 +49,7 @@ func consume(ctx context.Context, client *mail.Client, r *kafka.Reader) {
 		formatMsg := fmt.Sprintf("message at topic/partition/offset %v/%v/%v: %s = %s\n", m.Topic, m.Partition, m.Offset, string(m.Key), string(m.Value))
 		log.Info().Msg(formatMsg)
 
-		err = internal.RetrySendMailMechanisme(client, m.Value)
+		err = internal.RetrySendMailMechanism(client, m.Value)
 		if err != nil {
 			log.Err(err).Msgf("failed to send mail")
 			// DLQ process or any action
